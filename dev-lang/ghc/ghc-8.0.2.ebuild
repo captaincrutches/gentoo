@@ -84,10 +84,7 @@ RDEPEND="
 # gentoo binaries are built against ncurses-6
 RDEPEND+="
 	binary? (
-		|| (
-			sys-libs/ncurses:0/6
-			sys-libs/ncurses:5/6
-		)
+		sys-libs/ncurses:0/6
 	)
 "
 
@@ -459,12 +456,7 @@ src_prepare() {
 		epatch "${FILESDIR}"/${PN}-8.0.1-par-g0-on-A32.patch
 		epatch "${FILESDIR}"/${PN}-8.0.2_rc2-old-sphinx.patch
 		epatch "${FILESDIR}"/${PN}-8.0.2-libffi-alpha.patch
-
-		if use prefix; then
-			# Make configure find docbook-xsl-stylesheets from Prefix
-			sed -e '/^FP_DIR_DOCBOOK_XSL/s:\[.*\]:['"${EPREFIX}"'/usr/share/sgml/docbook/xsl-stylesheets/]:' \
-				-i utils/haddock/doc/configure.ac || die
-		fi
+		epatch "${FILESDIR}"/${PN}-8.0.2-O2-unreg.patch
 
 		bump_libs
 

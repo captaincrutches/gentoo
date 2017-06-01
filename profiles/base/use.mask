@@ -11,11 +11,6 @@ elogind
 # CURL_SSL=winssl is for prefix/windows/winnt only
 curl_ssl_winssl
 
-# on the way out
-ruby_targets_jruby
-ruby_targets_ruby19
-ruby_targets_ruby20
-
 # masking here and unmasking in default/linux/
 kmod
 
@@ -66,6 +61,7 @@ coreaudio
 # Jeremy Olexa <darkside@gentoo.org>
 # The prefix USE flags should never be used on non prefix profiles
 prefix
+prefix-chain
 prefix-guest
 
 # Diego E. Pettenò <flameeyes@gentoo.org> (19 Oct 2010)

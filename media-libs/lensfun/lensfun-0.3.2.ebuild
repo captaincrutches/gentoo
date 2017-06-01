@@ -1,9 +1,9 @@
-# Copyright 1999-2015 Gentoo Foundation
+# Copyright 1999-2017 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=5
 
-PYTHON_COMPAT=( python3_{4,5} )
+PYTHON_COMPAT=( python3_{4,5,6} )
 
 inherit multilib python-single-r1 cmake-utils
 
@@ -18,7 +18,8 @@ IUSE="doc cpu_flags_x86_sse cpu_flags_x86_sse2 test"
 
 RDEPEND=">=dev-libs/glib-2.28
 	media-libs/libpng:0=
-	sys-libs/zlib:="
+	sys-libs/zlib:=
+	${PYTHON_DEPS}"
 DEPEND="${RDEPEND}
 	doc? (
 		app-doc/doxygen
@@ -33,7 +34,7 @@ src_configure() {
 	local mycmakeargs=(
 		-DDOCDIR="${EPREFIX}"/usr/share/doc/${PF}/html
 		-DLIBDIR="${EPREFIX}"/usr/$(get_libdir)
-		-DSETUP_PY_INSTALL_PREFIX="${ED}"/$(python_get_sitedir)
+		-DSETUP_PY_INSTALL_PREFIX="${ED}"/usr
 		-DBUILD_AUXFUN=ON
 		-DBUILD_DOC=$(usex doc ON OFF)
 		-DBUILD_FOR_SSE=$(usex cpu_flags_x86_sse ON OFF)

@@ -17,9 +17,12 @@ LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~amd64 ~x86"
 IUSE="dri"
+REQUIRED_USE="${PYTHON_REQUIRED_USE}"
 
-RDEPEND=">=x11-base/xorg-server-1.7:=[-minimal]
-	x11-libs/libXcomposite"
+RDEPEND="
+	>=x11-base/xorg-server-1.7:=[-minimal]
+	x11-libs/libXcomposite
+	${PYTHON_DEPS}"
 DEPEND="${RDEPEND}
 	${PYTHON_DEPS}
 	>=dev-lang/yasm-0.6.2
@@ -41,8 +44,6 @@ DEPEND="${RDEPEND}
 	dri? (  x11-proto/xf86driproto
 		>=x11-libs/libdrm-2.4.5 )"
 PDEPEND="dri? ( ~app-emulation/virtualbox-guest-additions-${PV} )"
-
-REQUIRED_USE=( "${PYTHON_REQUIRED_USE}" )
 
 BUILD_TARGETS="all"
 BUILD_TARGET_ARCH="${ARCH}"
@@ -80,9 +81,8 @@ src_prepare() {
 	# Disable things unused or splitted into separate ebuilds
 	cp "${FILESDIR}/${PN}-5-localconfig" LocalConfig.kmk || die
 
-	# Remove pointless GCC version limitations in check_gcc()
-	sed -e "/\s*-o\s*\\\(\s*\$cc_maj\s*-eq\s*[5-9]\s*-a\s*\$cc_min\s*-gt\s*[0-5]\s*\\\)\s*\\\/d" \
-		-i configure || die
+	# Remove pointless GCC version check
+	sed -e '/^check_gcc$/d' -i configure || die
 
 	default
 

@@ -59,10 +59,8 @@ media-libs/phonon designer
 # Required by dev-qt/qtwebengine
 media-libs/libvpx svc
 
-# Allow certain KDE 4 components to be coinstalled with Plasma 5
-kde-apps/solid-runtime -bluetooth
-kde-frameworks/baloo minimal
-sys-auth/polkit-kde-agent minimal
+# Conflicts with kde-apps/audiocd-kio:5
+media-sound/amarok:4 -cdda
 
 # FIXME: unnecessary REQUIRED_USE ^^ ( qt4 qt5 )
 <app-office/texmaker-4.5-r1 -qt4

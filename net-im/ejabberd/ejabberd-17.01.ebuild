@@ -40,13 +40,15 @@ CDEPEND="
 	>=dev-erlang/p1_utils-1.0.6
 	>=dev-erlang/stringprep-1.0.7
 	>=dev-erlang/stun-1.0.9
+	>=dev-erlang/xmpp-1.1.6
 	>=dev-lang/erlang-17.1[hipe?,odbc?,ssl]
 	>=net-im/jabber-base-0.01
 	ldap? ( =net-nds/openldap-2* )
 	mysql? ( >=dev-erlang/p1_mysql-1.0.2 )
 	nls? ( >=dev-erlang/iconv-1.0.3 )
 	odbc? ( dev-db/unixODBC )
-	pam? ( >=dev-erlang/p1_pam-1.0.0 )
+	pam? ( >=dev-erlang/epam-1.0.0
+		<dev-erlang/epam-1.0.1 )
 	postgres? ( >=dev-erlang/p1_pgsql-1.1.2 )
 	redis? ( >=dev-erlang/eredis-1.0.8 )
 	riak? (
@@ -106,6 +108,15 @@ customize_epam_wrapper() {
 		|| die 'failed to install epam-wrapper'
 }
 
+# Disable mod_irc in example configuration file.
+disable_mod_irc() {
+	local needs_iconv='needs dev-erlang/iconv (+nls USE flag)'
+	sed -r \
+		-e "s@^(\s*)(mod_irc\s*:.*$)@\1## \2 # ${needs_iconv}@" \
+		-i "${S}/ejabberd.yml.example" \
+		|| die 'failed to modify example config'
+}
+
 # Check if there already exists a certificate.
 ejabberd_cert_exists() {
 	local cert
@@ -135,6 +146,12 @@ ejabberd_cert_install() {
 # to something else than this should be adjusted here as well.
 get_ejabberd_path() {
 	echo "/usr/$(get_libdir)/${P}"
+}
+
+# Check whether mod_irc is enabled in ejabberd configuration on target system.
+is_mod_irc_enabled() {
+	egrep '^(\s*)(mod_irc\s*:.*$)' \
+		"${EROOT%/}${JABBER_ETC}/ejabberd.yml"
 }
 
 # Make ejabberd.service for systemd from upstream provided template.
@@ -183,7 +200,11 @@ src_prepare() {
 	make_ejabberd_service
 	skip_docs
 	adjust_config
+	use nls || disable_mod_irc
 	customize_epam_wrapper "${FILESDIR}/epam-wrapper"
+
+	rebar_fix_include_path fast_xml
+	rebar_fix_include_path xmpp
 
 	# Fix bug #591862. ERL_LIBS should point directly to ejabberd directory
 	# rather than its parent which is default. That way ejabberd directory
@@ -292,5 +313,10 @@ pkg_postinst() {
 		local epam_path="$(get_ejabberd_path)/priv/bin/epam"
 		chmod g+r "${EROOT%/}${epam_path}" \
 			|| die "failed to correct ${epam_path} permissions"
+	fi
+
+	if ! use nls && is_mod_irc_enabled; then
+		ewarn "nls support (dev-erlang/iconv) is required by mod_irc. Either rebuild ejabberd"
+		ewarn "with nls enabled or disable mod_irc in ${EROOT%/}${JABBER_ETC}/ejabberd.yml."
 	fi
 }

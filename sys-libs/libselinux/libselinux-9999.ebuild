@@ -27,8 +27,8 @@ fi
 
 LICENSE="public-domain"
 SLOT="0"
-
 IUSE="pcre2 python ruby static-libs ruby_targets_ruby21 ruby_targets_ruby22 ruby_targets_ruby23"
+REQUIRED_USE="python? ( ${PYTHON_REQUIRED_USE} )"
 
 RDEPEND=">=sys-libs/libsepol-${SEPOL_VER}:=[${MULTILIB_USEDEP}]
 	!pcre2? ( >=dev-libs/libpcre-8.33-r1:=[static-libs?,${MULTILIB_USEDEP}] )
@@ -44,11 +44,6 @@ DEPEND="${RDEPEND}
 	python? ( >=dev-lang/swig-2.0.9 )"
 
 src_prepare() {
-	if [[ ${PV} != 9999 ]] ; then
-		# If needed for live builds, place them in /etc/portage/patches
-		eapply "${FILESDIR}/libselinux-2.6-0007-build-related-fixes-bug-500674.patch"
-	fi
-
 	eapply_user
 
 	multilib_copy_sources

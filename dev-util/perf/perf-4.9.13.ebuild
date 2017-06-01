@@ -37,7 +37,7 @@ SRC_URI+=" mirror://kernel/linux/kernel/v${LINUX_V}/${LINUX_SOURCES}"
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="~amd64 ~arm ~ppc ~x86"
+KEYWORDS="~amd64 ~arm ~ppc ~x86 ~amd64-linux ~x86-linux"
 IUSE="audit debug +demangle +doc gtk numa perl python slang unwind"
 REQUIRED_USE="python? ( ${PYTHON_REQUIRED_USE} )"
 
@@ -46,6 +46,7 @@ RDEPEND="audit? ( sys-process/audit )
 	gtk? ( x11-libs/gtk+:2 )
 	numa? ( sys-process/numactl )
 	perl? ( dev-lang/perl )
+	python? ( ${PYTHON_DEPS} )
 	slang? ( dev-libs/newt )
 	unwind? ( sys-libs/libunwind )
 	dev-libs/elfutils"
@@ -59,8 +60,7 @@ DEPEND="${RDEPEND}
 		app-text/sgml-common
 		app-text/xmlto
 		sys-process/time
-	)
-	python? ( ${PYTHON_DEPS} )"
+	)"
 
 S_K="${WORKDIR}/linux-${LINUX_VER}"
 S="${S_K}/tools/perf"
@@ -131,7 +131,7 @@ perf_make() {
 	local arch=$(tc-arch-kernel)
 	emake V=1 \
 		CC="$(tc-getCC)" AR="$(tc-getAR)" LD="$(tc-getLD)" \
-		prefix="/usr" bindir_relative="bin" \
+		prefix="${EPREFIX}/usr" bindir_relative="bin" \
 		EXTRA_CFLAGS="${CFLAGS}" \
 		ARCH="${arch}" \
 		NO_DEMANGLE=$(puse demangle) \
